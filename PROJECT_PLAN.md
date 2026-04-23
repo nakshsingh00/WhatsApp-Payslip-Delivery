@@ -1,679 +1,458 @@
-# PaySlip Generation & WhatsApp Delivery Utility - Complete Project Plan
+# PaySlip Generation & WhatsApp Delivery Utility
+## Complete Project Plan
 
-**Version**: 2.0  
+**Client**: Holistic Allied Services  
+**Version**: 3.0  
 **Last Updated**: April 22, 2026  
-**Status**: Phase 1 - 60% Complete (9/15 hours)
 
 ---
 
-## 📋 Executive Summary
+## Project Overview
 
-This document outlines the complete plan for building a **PaySlip Generation & WhatsApp Delivery Utility** - a software tool that automates the process of generating employee payslips from Excel data and delivering them via WhatsApp.
+Build a standalone desktop utility that automates payslip generation and WhatsApp delivery for Holistic Allied Services. The tool reads employee payroll data from an Excel file, validates and cleans the data, generates professional PDF payslips, and sends them to employees via WhatsApp — all triggered manually by the payroll administrator through a simple desktop GUI.
 
-### Project Goal
-Build a software utility that:
-1. Reads employee payroll data from Excel files
-2. Validates data integrity and completeness
-3. Cleans and standardizes data
-4. Generates professional PDF payslips
-5. Sends payslips via WhatsApp to employees
-
-### Business Value
-- ✅ Reduce manual payslip processing time by 90%
-- ✅ Ensure data accuracy with validation
-- ✅ Enable self-service payslip access
-- ✅ Reduce paper consumption
-- ✅ Improve employee experience
-
-### Key Characteristics
-- **Technology**: Python (local-only, no cloud infrastructure)
-- **Deployment**: Standalone application (Windows, Mac, Linux)
-- **User Interface**: Desktop GUI (Tkinter) with manual triggers
-- **Localization**: Indian context (₹ currency, IST timezone, Indian phone format)
-- **Scale**: 100-500 employees per batch
-- **Timeline**: 7 weeks (53 hours total)
+**Technology**: Python 3.8+  
+**Deployment**: Local-only, no cloud infrastructure  
+**Platform**: Windows / Mac / Linux  
+**Scale**: 100–500 employees per batch  
+**Currency**: Indian Rupees (₹)  
+**Timezone**: IST (Indian Standard Time)  
 
 ---
 
-## 🎯 Phase Breakdown
+## Phase 1: Project Setup & Infrastructure
 
-### Phase 1: Excel Data Processing (15 hours) - 60% COMPLETE
-**Duration**: Week 1 - Week 2  
-**Goal**: Read, validate, and clean payroll data
+**Goal**: Establish the development foundation — environment, dependencies, configuration, and version control.  
+**Status**: ✅ Complete
 
-#### ✅ Issue #1-4: Setup & Infrastructure (5 hours) - COMPLETE
-- Project structure and dependencies
-- Logging system with IST timezone
-- Configuration management (environment variables)
-- Git workflow and documentation
+### 1.1 Project Structure & Environment
+Create the project directory layout (`src/`, `tests/`, `data/`, `templates/`), initialize a Python virtual environment, and install all required packages via `requirements.txt`.
 
-#### ✅ Issue #5: Excel Reader Module (4 hours) - COMPLETE
-- Read Excel files with 30+ columns
-- Flexible column name mapping (29 fields)
-- Employee data extraction
-- Summary statistics
-- **Status**: 7 functions, 6/6 tests passing ✅
+**Deliverables**: Directory structure, virtual environment, `.gitignore`, `requirements.txt`  
+**Status**: ✅ Done
 
-#### ✅ Issue #6: Data Validation Module (3 hours) - COMPLETE
-- Phone number validation (Indian format)
-- Salary calculation verification
-- Deduction percentage checks
-- Employee status validation
-- Complete record validation
-- Batch validation reporting
-- Salary hold detection
-- **Status**: 7 functions, 26/26 tests passing ✅
+### 1.2 Logging System
+Build a centralized logging module with IST timezone support, automatic daily log files (`payslip_YYYYMMDD.log`), and both file and console output at configurable log levels.
 
-#### ⏳ Issue #7: Data Cleaning Module (2 hours) - NEXT
-- Normalize phone numbers
-- Convert currency values
-- Standardize dates (DD/MM/YYYY)
-- Handle missing values
-- Preserve remarks field
-- **Status**: Ready to start (dependencies met)
+**Deliverables**: `src/logger.py`, `data/logs/` directory  
+**Status**: ✅ Done
 
-#### ⏳ Issue #8: HTML PaySlip Template (4 hours)
-- Professional payslip layout design
-- Company branding (logo, address)
-- Earnings breakdown section
-- Deductions breakdown section
-- Print-friendly CSS styling
-- Responsive design
+### 1.3 Configuration Management
+Implement secure configuration management using `python-dotenv` so that Twilio credentials, company details, and processing settings are loaded from a `.env` file — never hardcoded in source code.
 
-**Phase 1 Deliverables**:
-- ✅ Working Excel reader
-- ✅ Comprehensive data validators
-- ⏳ Data cleaning pipeline
-- ⏳ Professional HTML template
+**Deliverables**: `src/config.py`, `.env.example` template  
+**Status**: ✅ Done
+
+### 1.4 Git Workflow & Version Control
+Set up the Git branching strategy (`main` → `development` → `feature/task-name`), create base documentation, and push the project to GitHub.
+
+**Deliverables**: `README.md`, `SETUP.md`, GitHub repository linked and active  
+**Status**: ✅ Done
 
 ---
 
-### Phase 2: PDF Generation (12 hours) - PLANNED
-**Duration**: Week 2 - Week 3  
-**Goal**: Convert HTML to professional PDF payslips
+## Phase 2: Excel Data Processing
 
-#### Issue #9-12: PDF Generation Engine (12 hours)
-- HTML to PDF conversion (WeasyPrint)
-- Single payslip generation
-- Batch processing with progress tracking
-- PDF quality verification
-- Auto-archival system
-- Error handling and logging
+**Goal**: Read and extract payroll data from the Excel file reliably, regardless of minor column name variations.  
+**Status**: ✅ Complete
 
-**Phase 2 Deliverables**:
-- PDF generation module
-- Batch processing system
-- Quality assurance pipeline
-- Archive management
+### 2.1 Excel File Reading
+Build the core Excel reading module using `pandas` and `openpyxl`. Implement a flexible 29-field column mapping system that finds columns by matching multiple possible name variations (case-insensitive), so the tool works even if the payroll file uses slightly different headers.
 
----
+**Deliverables**: `src/excel_reader.py` (7 functions, 290 lines)  
+**Status**: ✅ Done
 
-### Phase 3: WhatsApp Integration (10 hours) - PLANNED
-**Duration**: Week 3 - Week 4  
-**Goal**: Send payslips via WhatsApp
+### 2.2 Employee Data Extraction
+Extract each employee's row into a structured dictionary containing all 29 payroll fields: employee info, earnings components, deduction components, net pay, WhatsApp contact, and remarks.
 
-#### Issue #13-18: Twilio WhatsApp Integration (10 hours)
-- Twilio account setup and configuration
-- WhatsApp Business verification
-- Message queue system
-- Single message sending
-- Batch message sending with rate limiting
-- Delivery status tracking
-- Retry logic for failed deliveries
-- Detailed logging and reporting
+**Deliverables**: Structured employee dictionaries, `get_employee_summary()` function  
+**Status**: ✅ Done
 
-**Phase 3 Deliverables**:
-- WhatsApp sender module
-- Message queue system
-- Delivery tracking
-- Detailed execution reports
+### 2.3 File Metadata & Preview
+Provide utility functions to inspect an Excel file before processing — file name, size, row count, column list — and preview the first N rows to help the user confirm they've loaded the correct file.
+
+**Deliverables**: `get_excel_info()`, `preview_excel()` functions  
+**Status**: ✅ Done
 
 ---
 
-### Phase 4: Testing & Deployment (8 hours) - PLANNED
-**Duration**: Week 4 - Week 5  
-**Goal**: Ensure quality and ready for production
+## Phase 3: Data Validation
 
-#### Issue #19-25: Testing & QA (8 hours)
-- Unit tests for all modules
-- Integration tests for end-to-end workflow
-- Load testing (100+ employees)
-- Error scenario testing
-- User acceptance testing
-- Production deployment preparation
-- Documentation and user training
+**Goal**: Detect data quality issues in the payroll file before any payslips are generated, so errors are caught early.  
+**Status**: ✅ Complete
 
-**Phase 4 Deliverables**:
-- Complete test suite
-- Deployment checklist
-- User documentation
-- Training materials
+### 3.1 Phone Number Validation
+Validate WhatsApp contact numbers against Indian mobile format: 10 digits, first digit must be 6–9. Handle common variations (spaces, dashes, country code prefix) and normalize to the standard format.
 
----
+**Deliverables**: `validate_phone_number()` function  
+**Status**: ✅ Done
 
-### Phase 5: Advanced Features (8 hours) - PLANNED
-**Duration**: Week 5 - Week 6  
-**Goal**: Add advanced capabilities
+### 3.2 Salary Calculation Verification
+Verify that each employee's numbers are internally consistent: Net Take Home = Gross Wage − Total Deductions, within a configurable rounding tolerance. Flag any records where the math does not add up.
 
-#### Issue #26-35: Advanced Features (8 hours)
-- Analytics dashboard
-- Employee self-service portal
-- REST API endpoints
-- Mobile app support
-- Reporting enhancements
-- Integration with HR systems
+**Deliverables**: `validate_salary_calculation()` function  
+**Status**: ✅ Done
 
-**Phase 5 Deliverables**:
-- Analytics module
-- API endpoints
-- Portal interface
-- Integration connectors
+### 3.3 Deduction Compliance Checks
+Validate that EPF and ESI deductions fall within the expected legal percentages (EPF ≈ 13% of minimum wages, ESI ≈ 3.25% of gross). Flag records where deductions are outside the acceptable tolerance.
+
+**Deliverables**: `validate_deductions()` function  
+**Status**: ✅ Done
+
+### 3.4 Complete Record & Batch Reporting
+Validate every field in an employee record in one call, combining all individual validators. Process an entire batch and return a summary report with total valid/invalid counts and per-employee error details.
+
+**Deliverables**: `validate_employee_data()`, `generate_validation_report()`, `check_for_salary_holds()` functions  
+**Status**: ✅ Done
 
 ---
 
-### Phase 6: Maintenance & Support (5 hours) - PLANNED
-**Duration**: Week 6 - Week 7  
-**Goal**: Documentation and support
+## Phase 4: Data Cleaning & Normalization
 
-#### Issue #36-46: Maintenance & Support (5 hours)
-- Complete documentation
-- User guides and FAQs
-- Troubleshooting guides
-- Performance optimization
-- Support procedures
-- Future roadmap
+**Goal**: Standardize all data into consistent formats so the payslip template receives clean, uniform inputs.  
+**Status**: 🔄 In Progress (Next)
 
-**Phase 6 Deliverables**:
-- Complete documentation
-- User guides
-- Support procedures
-- Roadmap
+### 4.1 Phone Number Normalization
+Convert phone numbers to a consistent 10-digit format, stripping country codes, spaces, dashes, and parentheses. Output is always a plain 10-digit string ready for Twilio.
+
+**Deliverables**: `normalize_phone()` function in `src/cleaners.py`
+
+### 4.2 Currency Value Conversion
+Convert salary and deduction values from raw Excel types (strings with commas, floats with extra precision, None) to clean Python floats. Handle Indian number formatting (e.g., "1,50,000" → 150000.0).
+
+**Deliverables**: `convert_currency()` function
+
+### 4.3 Date Standardization
+Ensure all date fields (Date of Joining, Date of Leaving) are in DD/MM/YYYY string format for consistent display on payslips. Handle Excel date objects, string dates, and blank cells.
+
+**Deliverables**: `standardize_dates()` function
+
+### 4.4 Missing Value Handling
+Replace `None` and blank values with appropriate defaults per field type — empty string for text fields, 0.0 for numeric fields, "Active" for missing status. Preserve the remarks field exactly as written.
+
+**Deliverables**: `handle_missing_values()` function, `preserve_remarks()` function
 
 ---
 
-## 🏗️ Project Structure
+## Phase 5: HTML PaySlip Template
+
+**Goal**: Design a professional, print-ready payslip layout matching Holistic Allied Services' branding.  
+**Status**: ⏳ Planned
+
+### 5.1 Template Design & Structure
+Build the HTML payslip layout with clearly separated sections: company header (logo, name, address), employee information block, pay period, earnings table, deductions table, and net pay summary.
+
+**Deliverables**: `templates/payslip_template.html` (Jinja2 template)
+
+### 5.2 Stylesheet & Branding
+Write CSS to match Holistic Allied Services' visual identity — correct fonts, colors, table styling, and borders. Include print-specific styles so the payslip fits cleanly on A4 paper with proper margins.
+
+**Deliverables**: `templates/styles.css`
+
+### 5.3 Data Binding & Test Render
+Wire all template variables to the cleaned employee data dictionary using Jinja2. Render a test payslip with real employee data and verify all values display correctly, including Indian Rupee (₹) formatting.
+
+**Deliverables**: `src/template_generator.py`, verified sample render
+
+---
+
+## Phase 6: PDF Generation
+
+**Goal**: Convert rendered HTML payslips to professional PDF files, one per employee, with batch support.  
+**Status**: ⏳ Planned
+
+### 6.1 Single Payslip PDF
+Implement the core PDF generator using WeasyPrint to convert Jinja2-rendered HTML to a PDF file. Handle font embedding, page size (A4), and output file naming (`EMP_ID_Name_Month.pdf`).
+
+**Deliverables**: `generate_pdf()` function in `src/pdf_generator.py`
+
+### 6.2 Batch PDF Generation
+Extend the generator to process all employees in a list, generating one PDF per employee with progress tracking. Handle individual employee failures gracefully — log the error and continue the batch.
+
+**Deliverables**: `batch_generate_pdfs()` function with progress callback
+
+### 6.3 PDF Verification
+After generation, verify each PDF is valid: non-empty file, readable, correct page count. Log any corrupt or missing outputs so they can be regenerated before sending.
+
+**Deliverables**: `verify_pdfs()` function
+
+### 6.4 PDF Auto-Archival
+Move generated PDFs older than 90 days (configurable via `.env`) from the active output folder to the archive folder. Prevents indefinite disk usage growth.
+
+**Deliverables**: `archive_pdfs()` function, configurable `PAYSLIP_RETENTION_DAYS` setting
+
+---
+
+## Phase 7: WhatsApp Integration
+
+**Goal**: Deliver payslip PDFs to employees via WhatsApp using the Twilio API reliably and at scale.  
+**Status**: ⏳ Planned
+
+### 7.1 Twilio API Setup
+Configure the Twilio client with credentials from `.env`, verify the WhatsApp Business number is active, and test the API connection before any batch delivery begins.
+
+**Deliverables**: Twilio client initialization in `src/whatsapp_sender.py`, connection health check
+
+### 7.2 Single Message Delivery
+Implement `send_message()` to send one payslip PDF to one employee's WhatsApp number. Validates the phone number, attaches the PDF, sends via Twilio, and logs the result.
+
+**Deliverables**: `send_message()` function
+
+### 7.3 Batch Delivery with Rate Limiting
+Process the full employee list sequentially with a configurable delay between messages (default: 2 seconds) to stay within Twilio's rate limits. Track sent/failed counts in real time.
+
+**Deliverables**: `send_batch()` function, `rate_limit()` queue wrapper
+
+### 7.4 Delivery Tracking & Retry
+Capture delivery status per employee (sent, delivered, failed) from Twilio's API response. Automatically retry failed messages up to 3 times with exponential backoff. Write unresolved failures to a retry queue file.
+
+**Deliverables**: `track_delivery()`, `retry_failed()` functions, `data/reports/retry_queue.json`
+
+---
+
+## Phase 8: Desktop GUI
+
+**Goal**: Wrap all functionality in a simple Tkinter GUI so payroll staff can operate the tool without any technical knowledge.  
+**Status**: ⏳ Planned
+
+### 8.1 Main Application Window
+Build the primary Tkinter window with a logical step-by-step layout: (1) Load Excel File, (2) Validate & Preview, (3) Generate Payslips, (4) Send via WhatsApp, (5) View Report. Include confirmation dialogs before any bulk action.
+
+**Deliverables**: `src/gui.py` (main window and navigation flow)
+
+### 8.2 File Selection & Data Preview
+Add a file browser dialog for Excel selection followed by a scrollable table showing the first 10 rows. Display validation results inline — green checkmarks for valid rows, red warnings for issues.
+
+**Deliverables**: File browser widget, data preview table
+
+### 8.3 Progress & Execution Log
+Show a progress bar and live status during PDF generation and WhatsApp sending ("Sending 45 of 125..."). Display a scrolling timestamped execution log so the user can see exactly what is happening.
+
+**Deliverables**: Progress bar widget, scrolling log panel
+
+### 8.4 Post-Run Report Viewer
+After a batch completes, show a summary dialog (total sent, failed, cost estimate in ₹) and provide a button to open the saved CSV delivery report from `data/reports/`.
+
+**Deliverables**: Summary dialog, report file link
+
+---
+
+## Phase 9: Testing & Quality Assurance
+
+**Goal**: Verify the complete system is reliable, handles errors gracefully, and meets performance targets.  
+**Status**: ⏳ Planned
+
+### 9.1 Unit Test Coverage
+Ensure every public function across all modules has unit tests covering the happy path and at least one error/edge case. Target: 100% function coverage.
+
+**Deliverables**: Complete unit test suite across all `src/` modules
+
+### 9.2 Integration Testing
+Test the pipeline as an end-to-end chain: Excel read → validate → clean → render → generate PDF. Use a real test Excel file and verify the output PDF is correct.
+
+**Deliverables**: `tests/test_integration.py`
+
+### 9.3 End-to-End & Load Testing
+Run the full workflow including Twilio sandbox delivery with a test batch of 5–10 employees. Separately, run a load test with 100–500 employees and verify performance — PDF generation speed, memory usage, send throughput.
+
+**Deliverables**: E2E test script, load test results and performance report
+
+### 9.4 Error Scenario Testing
+Test all known failure modes: missing Excel file, corrupt data, invalid phone numbers, Twilio API unavailable, disk full. Confirm the tool exits cleanly and logs the failure in every case.
+
+**Deliverables**: Error scenario test cases, confirmed graceful failure in all scenarios
+
+---
+
+## Phase 10: Deployment & Packaging
+
+**Goal**: Package the tool so it can be handed to Holistic Allied Services and run on any Windows/Mac machine in minutes.  
+**Status**: ⏳ Planned
+
+### 10.1 Launcher & Setup Scripts
+Create a one-click `run.py` launcher and platform-specific setup scripts (`setup.bat` for Windows, `setup.sh` for Mac/Linux) that install dependencies and create the `.env` from the template automatically.
+
+**Deliverables**: `run.py`, `setup.bat`, `setup.sh`
+
+### 10.2 User Acceptance Testing
+Run the complete tool with real payroll data from Holistic Allied Services (or a realistic anonymized copy). Get sign-off from the payroll administrator that outputs are correct and the GUI is usable.
+
+**Deliverables**: UAT session, final adjustments, sign-off
+
+### 10.3 Deployment Checklist
+Verify all pre-launch items: no credentials in code, `.env` template complete, logs working, tests passing, documentation done. Final checklist review before handover.
+
+**Deliverables**: Completed deployment checklist, handover package
+
+---
+
+## Phase 11: Documentation
+
+**Goal**: Produce complete documentation so the tool can be used, maintained, and supported without the original developer.  
+**Status**: ⏳ Planned
+
+### 11.1 User Guide
+Step-by-step instructions for the payroll administrator: how to set up the tool, prepare the Excel file, run the tool, interpret results, and troubleshoot common issues. Written for non-technical users with screenshots.
+
+**Deliverables**: `docs/USAGE.md`, annotated screenshots
+
+### 11.2 Technical Documentation
+Developer-facing documentation: architecture overview, module descriptions, API reference for all public functions, environment variable reference, and contribution guidelines.
+
+**Deliverables**: `docs/ARCHITECTURE.md`, updated `README.md`
+
+### 11.3 Troubleshooting Guide & FAQ
+Covers the 15 most common errors users are likely to encounter, with exact error messages and step-by-step resolution for each. Includes FAQ section for recurring questions.
+
+**Deliverables**: `docs/TROUBLESHOOTING.md`, `docs/FAQ.md`
+
+---
+
+## Phase 12: Maintenance & Future Roadmap
+
+**Goal**: Define how the tool will be maintained and identify enhancement opportunities after initial delivery.  
+**Status**: ⏳ Planned
+
+### 12.1 Performance Optimization
+Profile and optimize any bottlenecks identified during load testing — PDF generation parallelization, Excel parsing speed, WhatsApp send throughput.
+
+**Deliverables**: Optimization report, any code improvements
+
+### 12.2 Future Enhancement Roadmap
+Document potential future enhancements for consideration: payslip email delivery option, analytics dashboard, HR system integration, automated scheduling, multi-company support.
+
+**Deliverables**: `docs/ROADMAP.md` with prioritized enhancement list
+
+### 12.3 Support & Handover
+Final handover session with Holistic Allied Services: walkthrough of the tool, handover of credentials setup guide, explanation of how to update the tool for future months.
+
+**Deliverables**: Handover session, credentials guide, monthly operation checklist
+
+---
+
+## Implementation Timeline
+
+| Phase | Description | Hours | Priority | Status |
+|-------|-------------|-------|----------|--------|
+| 1 | Project Setup & Infrastructure | 5h | P0 | ✅ Done |
+| 2 | Excel Data Processing | 4h | P0 | ✅ Done |
+| 3 | Data Validation | 3h | P0 | ✅ Done |
+| 4 | Data Cleaning & Normalization | 2h | P0 | 🔄 Next |
+| 5 | HTML PaySlip Template | 4h | P0 | ⏳ Planned |
+| 6 | PDF Generation | 6h | P0 | ⏳ Planned |
+| 7 | WhatsApp Integration | 8h | P0 | ⏳ Planned |
+| 8 | Desktop GUI | 6h | P0 | ⏳ Planned |
+| 9 | Testing & Quality Assurance | 6h | P0 | ⏳ Planned |
+| 10 | Deployment & Packaging | 4h | P0 | ⏳ Planned |
+| 11 | Documentation | 3h | P1 | ⏳ Planned |
+| 12 | Maintenance & Roadmap | 2h | P2 | ⏳ Planned |
+| **Total** | | **53h** | | **23% Complete** |
+
+**Hours Complete**: 12/53 (23%)  
+**Hours Remaining**: 41/53 (77%)
+
+---
+
+## Technology Stack
+
+| Category | Library | Version | Purpose |
+|----------|---------|---------|---------|
+| Data Processing | pandas | 1.3.0+ | Excel reading, data manipulation |
+| Excel I/O | openpyxl | 3.0.0+ | Excel file handling |
+| Templating | Jinja2 | 3.0.0+ | HTML template rendering |
+| PDF | WeasyPrint | 54.0+ | HTML to PDF conversion |
+| WhatsApp | twilio | 7.0.0+ | WhatsApp Business API |
+| Config | python-dotenv | 0.19.0+ | Environment variable management |
+| Timezone | pytz | latest | IST timezone support |
+| Testing | pytest | 6.0.0+ | Test framework |
+| GUI | tkinter | built-in | Desktop user interface |
+
+---
+
+## Project Structure
 
 ```
 payslip-whatsapp-tool/
-│
-├── src/                          # Source code
-│   ├── __init__.py
-│   ├── main.py                   # Main entry point (Phase 7)
-│   ├── gui.py                    # GUI interface (Phase 6.5)
-│   ├── config.py                 # Configuration (✅ COMPLETE)
-│   ├── logger.py                 # Logging setup (✅ COMPLETE)
-│   │
-│   ├── excel_reader.py           # Excel processing (✅ COMPLETE)
-│   ├── validators.py             # Data validation (✅ COMPLETE)
-│   ├── cleaners.py               # Data cleaning (Phase 1.7)
-│   │
-│   ├── template_generator.py     # HTML templates (Phase 1.8)
-│   ├── pdf_generator.py          # PDF generation (Phase 2)
-│   ├── whatsapp_sender.py        # WhatsApp/Twilio (Phase 3)
-│   │
-│   ├── utils.py                  # Helper functions
-│   └── api.py                    # REST API (Phase 5)
-│
-├── tests/                        # Test suite
-│   ├── __init__.py
-│   ├── test_excel_reader.py      # (✅ 6 tests PASSING)
-│   ├── test_validators.py        # (✅ 26 tests PASSING)
-│   ├── test_cleaners.py          # (Phase 1.7)
-│   ├── test_pdf_generator.py     # (Phase 2)
-│   ├── test_whatsapp_sender.py   # (Phase 3)
-│   └── test_integration.py       # (Phase 4)
-│
-├── templates/                    # HTML templates
-│   ├── payslip_template.html     # (Phase 1.8)
-│   ├── styles.css                # (Phase 1.8)
-│   ├── logo.png                  # (User provided)
-│   └── sample_payslip.pdf        # (Phase 2)
-│
-├── data/                         # Data directories
-│   ├── logs/                     # Log files (✅ Active)
-│   ├── sample/                   # Sample Excel files
-│   ├── generated_payslips/       # Output PDFs
-│   ├── reports/                  # Execution reports
-│   └── archived_payslips/        # Old payslips
-│
-├── docs/                         # Documentation
-│   ├── README.md                 # (✅ Created)
-│   ├── SETUP.md                  # Setup instructions
-│   ├── CONFIG.md                 # Configuration guide
-│   ├── USAGE.md                  # User guide
-│   └── TROUBLESHOOTING.md        # FAQ & troubleshooting
-│
-├── .env.example                  # Configuration template (✅ Created)
-├── .gitignore                    # Git ignore rules (✅ Created)
-├── requirements.txt              # Python dependencies (✅ Created)
-├── run.py                        # Simple launcher script
-│
-└── [Documentation Files]
-    ├── PROJECT_DOCUMENTATION.md
-    ├── GITHUB_ISSUES_AND_PROGRESS.md
-    ├── ISSUES_1_5_BREAKDOWN.md
-    └── SESSION_SUMMARY_ISSUE_6.md
+├── src/
+│   ├── logger.py              ✅ Complete
+│   ├── config.py              ✅ Complete
+│   ├── excel_reader.py        ✅ Complete
+│   ├── validators.py          ✅ Complete
+│   ├── cleaners.py            🔄 Next
+│   ├── template_generator.py  ⏳ Phase 5
+│   ├── pdf_generator.py       ⏳ Phase 6
+│   ├── whatsapp_sender.py     ⏳ Phase 7
+│   ├── gui.py                 ⏳ Phase 8
+│   └── main.py                ⏳ Phase 8
+├── tests/
+│   ├── test_excel_reader.py   ✅ 6 tests passing
+│   ├── test_validators.py     ✅ 26 tests passing
+│   ├── test_cleaners.py       🔄 Next
+│   ├── test_integration.py    ⏳ Phase 9
+│   └── test_pdf_generator.py  ⏳ Phase 6
+├── templates/
+│   ├── payslip_template.html  ⏳ Phase 5
+│   └── styles.css             ⏳ Phase 5
+├── data/
+│   ├── logs/                  ✅ Active
+│   ├── sample/
+│   ├── generated_payslips/
+│   ├── reports/
+│   └── archived_payslips/
+├── docs/
+│   ├── USAGE.md               ⏳ Phase 11
+│   ├── TROUBLESHOOTING.md     ⏳ Phase 11
+│   └── ARCHITECTURE.md        ⏳ Phase 11
+├── .env.example               ✅ Complete
+├── .gitignore                 ✅ Complete
+├── requirements.txt           ✅ Complete
+├── run.py                     ⏳ Phase 10
+└── README.md                  ✅ Complete
 ```
 
 ---
 
-## 📊 Excel Data Structure
+## Excel Payroll Data Structure
 
-Your Excel file should contain these columns:
+The tool reads Excel files with the following column structure (Holistic Allied Services format):
 
-### Employee Information Columns
-| Column | Format | Example | Notes |
-|--------|--------|---------|-------|
-| Sr No. | Integer | 1 | Row number |
-| Emp ID | Text/Number | EMP001 | Unique identifier |
-| Name | Text | Raj Kumar | Employee name |
-| Designation | Text | Operator | Job title |
-| Date of Joining | Date | 15/01/2020 | DD/MM/YYYY format |
-| Date of Leaving | Date | 31/12/2023 | If applicable |
-| Status | Text | Active/Left | Employee status |
-| Location | Text | Chennai | Office location |
-| Gender | Text | M/F | Employee gender |
-| Department | Text | Production | Department name |
+**Employee Information**: Sr No., Emp ID, Name, Designation, Department, Location, Gender, Date of Joining, Date of Leaving, Status, WhatsApp Contact
 
-### Earnings Components (₹)
-| Column | Format | Example | Calculation |
-|--------|--------|---------|-------------|
-| Minimum Wages | Currency | 15000 | Base salary |
-| House Rent Allowance | Currency | 3000 | Typically 20% of MW |
-| Special Allowance | Currency | 1000 | Additional allowance |
-| Extra Duty Allowance | Currency | 500 | For overtime |
-| Travelling Allowance | Currency | 1000 | Conveyance |
-| Bonus @ 8.33% | Currency | 1250 | 8.33% of MW |
-| Leave (18 Days/Year) | Currency | 2000 | Annual leave with pay |
-| Labour Welfare Fund | Currency | 100 | Mandatory fund |
-| Cost of Uniform | Currency | 100 | Uniform allowance |
-| Gross Wage | Currency | 24450 | Total earnings |
-| CTC | Currency | 32450 | Cost to company |
+**Earnings (₹)**: Minimum Wages, House Rent Allowance, Special Allowance, Extra Duty Allowance, Travelling Allowance, Bonus @ 8.33%, Leave with Wages, Labour Welfare Fund, Cost of Uniform, Gross Wage, CTC
 
-### Deductions Components (₹)
-| Column | Format | Example | Percentage |
-|--------|--------|---------|-----------|
-| E.P.F @ 13% | Currency | 1950 | 13% of MW |
-| E.S.I @ 3.25% | Currency | 794 | 3.25% of Gross |
-| E.P.F @ 12% (Employer) | Currency | 1800 | Employer contrib |
-| E.S.I @ 0.75% (Employer) | Currency | 184 | Employer contrib |
-| Professional Tax | Currency | 200 | State tax |
-| Total Deductions | Currency | 4928 | Sum of deductions |
+**Deductions (₹)**: EPF @ 13%, ESI @ 3.25%, EPF @ 12%, ESI @ 0.75%, Professional Tax, Total Deductions
 
-### Net Pay & Contact
-| Column | Format | Example | Notes |
-|--------|--------|---------|-------|
-| Net Take Home Pay | Currency | 19522 | Gross - Deductions |
-| WhatsApp Contact | Phone | 9876543210 | 10-digit Indian mobile |
-| Remarks | Text | Salary on hold | Notes, holds, advances |
+**Net Pay**: Net Take Home Pay
 
-**Important Notes**:
-- ✅ All amounts in Indian Rupees (₹)
-- ✅ Phone numbers: 10-digit Indian format (e.g., 9876543210)
-- ✅ Status field: "Active" or "Left"
-- ✅ Dates: DD/MM/YYYY format
-- ✅ Remarks: For salary holds, advances, etc.
+**Notes**: Remarks
+
+The column finder uses flexible matching so minor variations in column names (e.g., "House Rent" vs "HRA" vs "House Rent Allowance") are handled automatically.
 
 ---
 
-## 🔧 Technology Stack
+## Success Criteria
 
-### Core Programming
-- **Language**: Python 3.8+ (cross-platform)
-- **Package Manager**: pip
-- **Virtual Environment**: venv (built-in)
-
-### Data Processing
-- **pandas** (v1.3.0+) - Data manipulation and Excel reading
-- **openpyxl** (v3.0.0+) - Excel file handling
-- **NumPy** - Numerical operations
-
-### Templating & PDF
-- **Jinja2** (v3.0.0+) - HTML template rendering
-- **WeasyPrint** (v54.0+) - HTML to PDF conversion with professional styling
-- **Pillow** (v8.0.0+) - Image processing (for logos)
-
-### WhatsApp & Communication
-- **twilio** (v7.0.0+) - WhatsApp Business API integration
-- **requests** (v2.26.0+) - HTTP requests
-
-### Configuration & Logging
-- **python-dotenv** (v0.19.0+) - Environment variable management
-- **pytz** - Timezone support (IST)
-- **colorama** (v0.4.0+) - Colored terminal output
-
-### Testing & Quality
-- **pytest** (v6.0.0+) - Testing framework
-- **unittest** - Built-in testing (for basic tests)
-
-### User Interface
-- **tkinter** - Desktop GUI (built-in with Python)
+- [ ] All 100–500 payslips generated correctly from a real Excel file
+- [ ] All generated PDFs match the approved payslip design
+- [ ] All WhatsApp messages delivered successfully (or logged for retry)
+- [ ] Tool runs without errors on Windows and Mac
+- [ ] Processing completes in under 10 minutes for 500 employees
+- [ ] No employee salary data leaves the local machine (except via Twilio WhatsApp)
+- [ ] No credentials hardcoded in source code
+- [ ] All tests passing (target: 100%)
+- [ ] Non-technical staff can operate the tool with the user guide only
+- [ ] Payroll administrator has signed off on output accuracy
 
 ---
 
-## 📈 Implementation Timeline
+## Key Design Decisions
 
-| Phase | Task | Hours | Start | End | Priority |
-|-------|------|-------|-------|-----|----------|
-| 1 | Setup & Infrastructure | 5 | Apr 15 | Apr 17 | P0 |
-| 1 | Excel Reader | 4 | Apr 17 | Apr 19 | P0 |
-| 1 | Data Validators | 3 | Apr 19 | Apr 22 | P0 |
-| 1 | Data Cleaning | 2 | Apr 22 | Apr 23 | P0 |
-| 1 | HTML Template | 4 | Apr 23 | Apr 25 | P0 |
-| 2 | PDF Generation | 4 | Apr 25 | Apr 27 | P0 |
-| 2 | Batch Processing | 4 | Apr 27 | Apr 29 | P0 |
-| 2 | PDF Verification | 4 | Apr 29 | May 1 | P0 |
-| 3 | WhatsApp Integration | 6 | May 1 | May 5 | P0 |
-| 3 | Message Queue | 2 | May 5 | May 6 | P0 |
-| 3 | Delivery Tracking | 2 | May 6 | May 7 | P0 |
-| 4 | Testing | 4 | May 7 | May 9 | P0 |
-| 4 | Deployment | 4 | May 9 | May 11 | P0 |
-| 5 | Advanced Features | 8 | May 11 | May 18 | P2 |
-| 6 | Documentation | 5 | May 18 | May 23 | P2 |
-| **TOTAL** | | **53** | Apr 15 | May 23 | |
+**Local-only deployment**: All data stays on the user's machine. No cloud storage, no remote servers beyond the Twilio API call. This protects employee salary data and eliminates ongoing infrastructure costs.
 
-**Current Status**: 12/53 hours (23% complete)  
-**On Track**: Yes ✅
+**Manual trigger model**: The payroll administrator explicitly clicks to start each step. No automated scheduling or background processes. This gives full control and prevents accidental sends.
 
----
+**Flexible column mapping**: Excel column names in real payroll files are inconsistent. The tool matches columns by trying multiple possible names, so it works without modifying the Excel file each month.
 
-## 🎓 Key Design Decisions
+**Twilio for WhatsApp**: Uses the official Twilio WhatsApp Business API rather than unofficial methods. This ensures reliability, compliance, and no account suspension risk.
 
-### 1. Technology Choice
-**Python** selected because:
-- ✅ Excellent data processing libraries (Pandas)
-- ✅ Strong PDF generation tools
-- ✅ Easy API integration (Twilio)
-- ✅ Cross-platform compatibility
-- ✅ Large community support
-- ✅ Perfect for automation
-
-### 2. Deployment Model
-**Local-only deployment**:
-- ✅ No cloud infrastructure or hosting costs
-- ✅ All data stays on user's machine
-- ✅ Full privacy and control
-- ✅ Simple one-time setup
-- ✅ No recurring cloud costs
-
-### 3. User Interface
-**Desktop GUI (Tkinter)**:
-- ✅ No installation hassles
-- ✅ Works on Windows, Mac, Linux
-- ✅ Manual trigger model (user controls execution)
-- ✅ Clear execution logs and progress
-- ✅ Confirmation dialogs for critical actions
-
-### 4. WhatsApp Integration
-**Twilio API** selected because:
-- ✅ Official, reliable API
-- ✅ Great support for Indian numbers
-- ✅ No account suspension risk
-- ✅ Good documentation
-- ✅ Reasonable pricing (~₹2-3 per message)
-- ✅ Professional service level
-
-### 5. Data Validation
-**Comprehensive validation** ensures:
-- ✅ Phone numbers in correct format
-- ✅ Salary calculations are accurate
-- ✅ All required fields present
-- ✅ Deductions follow compliance rules
-- ✅ Early error detection
-
-### 6. Logging & Monitoring
-**Professional logging** with:
-- ✅ IST timezone (Indian context)
-- ✅ File + console output
-- ✅ Multiple log levels
-- ✅ Execution reports in CSV format
-- ✅ Audit trail for compliance
-
----
-
-## ⚙️ Configuration & Setup
-
-### Environment Variables (.env file)
-```
-# Twilio Configuration
-TWILIO_ACCOUNT_SID=your_account_sid_here
-TWILIO_AUTH_TOKEN=your_auth_token_here
-WHATSAPP_BUSINESS_NUMBER=+91XXXXXXXXXX
-
-# Company Information
-COMPANY_NAME=Your Company Name
-COMPANY_LOGO_PATH=./assets/logo.png
-COMPANY_ADDRESS=City, State, Country
-
-# Processing Settings
-LOG_LEVEL=INFO
-MESSAGE_DELAY_SECONDS=2
-PAYSLIP_RETENTION_DAYS=90
-BATCH_SIZE=10
-
-# Database (optional)
-DATABASE_URL=sqlite:///payslips.db
-```
-
-### Directory Structure
-```
-data/
-├── logs/                    # Application logs (auto-created)
-├── sample/                  # Sample Excel files
-│   └── sample_payroll.xlsx
-├── generated_payslips/      # Output PDFs
-├── reports/                 # Execution reports
-└── archived_payslips/       # Old payslips (auto-archived)
-```
-
----
-
-## 🚀 Manual Trigger System
-
-### User Workflow
-1. **Load Excel File**
-   - User clicks "Load Excel File" button
-   - System displays preview of data
-   - Validation errors shown in real-time
-
-2. **Generate PaySlips**
-   - User clicks "Generate PaySlips"
-   - Progress bar shows generation status
-   - PDFs saved to `data/generated_payslips/`
-
-3. **Send via WhatsApp**
-   - User clicks "Send PaySlips"
-   - Confirmation dialog shows count and cost
-   - Progress bar shows sending status
-   - Real-time delivery log
-
-4. **View Report**
-   - Execution report generated automatically
-   - Shows sent, failed, cost summary
-   - Saved in `data/reports/` directory
-
-### GUI Layout
-```
-┌─────────────────────────────────────────┐
-│  PaySlip Generator & WhatsApp Sender   │
-├─────────────────────────────────────────┤
-│                                         │
-│ 1. SELECT EXCEL FILE                  │
-│    [Browse...] File: employee_data... │
-│    Status: ✓ Valid (125 employees)    │
-│                                         │
-│ 2. PREVIEW & VALIDATE                 │
-│    [Preview Table] [Validate] [Clear] │
-│    ✓ All validations passed           │
-│                                         │
-│ 3. GENERATE PAYSLIPS                  │
-│    [Generate PaySlips]                │
-│    Status: Ready (125 payslips)       │
-│                                         │
-│ 4. SEND VIA WHATSAPP                  │
-│    [Send Now] [Estimate Cost]         │
-│    Status: ✓ Connected                │
-│                                         │
-│ 5. EXECUTION LOG                      │
-│    [14:32:05] Starting process...     │
-│    [14:32:06] ✓ PDF generated        │
-│    [14:32:20] ✓ Message sent (+₹2)   │
-│                                         │
-│ [Settings] [Reports] [Clear] [Exit]  │
-└─────────────────────────────────────────┘
-```
-
----
-
-## 📊 Success Criteria
-
-- [x] Phase 1 - Excel processing functional
-- [x] All tests passing (100%)
-- [ ] Phase 2 - PDF generation working
-- [ ] Phase 3 - WhatsApp delivery functional
-- [ ] Phase 4 - Performance tested (100+ payslips/min)
-- [ ] Phase 5 - User acceptance testing complete
-- [ ] Phase 6 - Production deployment ready
-- [ ] All documentation complete
-- [ ] No hardcoded credentials in code
-- [ ] Security review passed
-
----
-
-## 🔐 Security Measures
-
-1. **Credential Management**
-   - Never hardcode credentials
-   - Use `.env` file with environment variables
-   - `.env` file in `.gitignore` (not committed)
-
-2. **Data Protection**
-   - Salary data stored locally only
-   - PDF auto-deletion after 90 days (configurable)
-   - No data sent to external servers
-   - WhatsApp uses Twilio's secure connection
-
-3. **Access Control**
-   - Tool runs on user's machine only
-   - No remote access or accounts needed
-   - User controls all execution
-
-4. **Compliance**
-   - Indian data protection compliance
-   - Employee privacy respect
-   - Audit trail for all operations
-   - Salary calculation verification
-
----
-
-## 📈 Current Progress
-
-### Completed (60%)
-- ✅ Project structure and setup
-- ✅ Logging system with IST timestamps
-- ✅ Configuration management
-- ✅ Git workflow setup
-- ✅ Excel reader module (7 functions)
-- ✅ Data validators module (7 functions)
-- ✅ Comprehensive test suite (32 tests, 100% passing)
-
-### In Progress (0%)
-- 🔄 Data cleaning module (Issue #7)
-
-### Planned (40%)
-- ⏳ HTML template design
-- ⏳ PDF generation engine
-- ⏳ WhatsApp integration
-- ⏳ Testing & deployment
-- ⏳ Advanced features
-- ⏳ Documentation
-
----
-
-## 📞 Required Resources
-
-### Development Tools
-- Python 3.8+ (free)
-- Code editor (VS Code, PyCharm Community - free)
-- Git (free)
-- Virtual environment (venv - built-in)
-
-### External Services
-- **Twilio Account** (https://www.twilio.com)
-  - Free trial with $15 credit
-  - Cost: ~₹2-3 per message
-  - Requires business verification for India
-
-- **WhatsApp Business Account**
-  - Connected to Twilio
-  - Indian phone number
-  - Business verification required
-
-### Python Libraries
-See `requirements.txt`:
-- pandas, openpyxl, Jinja2, WeasyPrint
-- twilio, requests, python-dotenv
-- pytest, colorama, Pillow
-
----
-
-## 🎯 Next Steps
-
-1. **Immediate** (Week 1):
-   - ✅ Setup Python environment
-   - ✅ Initialize Git repository
-   - ✅ Create Excel reader module
-   - ✅ Create data validators
-   - 🔄 Start data cleaning module
-
-2. **Short-term** (Week 2):
-   - Design HTML template
-   - Implement PDF generation
-   - Set up batch processing
-
-3. **Medium-term** (Week 3-4):
-   - Configure Twilio account
-   - Implement WhatsApp sender
-   - Set up message queue
-
-4. **Long-term** (Week 5+):
-   - Comprehensive testing
-   - Production deployment
-   - Advanced features
-   - Complete documentation
-
----
-
-## 📚 Documentation Files
-
-- `README.md` - Project overview
-- `SETUP.md` - Installation guide
-- `CONFIG.md` - Configuration reference
-- `USAGE.md` - User guide
-- `TROUBLESHOOTING.md` - FAQ & solutions
-- `PROJECT_DOCUMENTATION.md` - Detailed specs
-- `GITHUB_ISSUES_AND_PROGRESS.md` - Issue tracking
-- `ISSUES_1_5_BREAKDOWN.md` - Detailed completion summaries
-
----
-
-## ✨ Key Highlights
-
-### What Makes This Project Great
-1. ✅ **Automation**: Reduces manual work by 90%
-2. ✅ **Accuracy**: Comprehensive validation catches errors early
-3. ✅ **Professional**: Beautiful PDF payslips with company branding
-4. ✅ **Privacy**: All data stored locally, full control
-5. ✅ **Scalable**: Handles 100-500 employees per batch
-6. ✅ **Reliable**: WhatsApp delivery with tracking
-7. ✅ **User-Friendly**: Desktop GUI with manual triggers
-8. ✅ **Cost-Effective**: No infrastructure, minimal WhatsApp costs
-9. ✅ **Maintainable**: Professional code with 100% tests passing
-10. ✅ **Compliant**: Indian regulations, audit trail
-
----
-
-**Repository**: `/tmp/payslip-whatsapp-tool`  
-**Current Date**: April 22, 2026  
-**Status**: Phase 1 - 60% Complete  
-**Next Milestone**: Issue #7 - Data Cleaning Module
+**Indian localization**: All phone validation, currency formatting, date handling, and timezone displays are built for the Indian context — 10-digit mobile numbers starting 6–9, ₹ symbol, DD/MM/YYYY dates, IST timestamps.
