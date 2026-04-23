@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaySlip - {{ employee.name }}</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="payslip">
+
+        <!-- ===== COMPANY HEADER ===== -->
+        <div class="header">
+            <div class="header-left">
+                <div class="ref-number">{{ employee.emp_id }}</div>
+            </div>
+            <div class="header-right">
+                <h1 class="company-name">HOLISTIC<br>ALLIED<br>SERVICES</h1>
+                <p class="company-tagline">FACILITY MANAGEMENT & SECURITY</p>
+            </div>
+        </div>
+
+        <!-- ===== PAYSLIP TITLE ===== -->
+        <div class="payslip-title">
+            PAYSLIP FOR THE MONTH OF {{ pay_period }}
+        </div>
+
+        <!-- ===== EMPLOYEE INFORMATION ===== -->
+        <table class="employee-info">
+            <tr>
+                <td class="label">Employee Name</td>
+                <td class="value">{{ employee.name }}</td>
+                <td class="label">Employee ID</td>
+                <td class="value">{{ employee.emp_id }}</td>
+            </tr>
+            <tr>
+                <td class="label">Designation</td>
+                <td class="value">{{ employee.designation }}</td>
+                <td class="label">Department</td>
+                <td class="value">{{ employee.department }}</td>
+            </tr>
+            <tr>
+                <td class="label">Month</td>
+                <td class="value">{{ pay_month }}</td>
+                <td class="label">Date of Joining</td>
+                <td class="value">{{ employee.date_of_joining }}</td>
+            </tr>
+        </table>
+
+        <!-- ===== EARNINGS & DEDUCTIONS (side by side) ===== -->
+        <table class="salary-table">
+            <thead>
+                <tr>
+                    <th>Earnings</th>
+                    <th class="amount-col">Amount</th>
+                    <th>Deductions</th>
+                    <th class="amount-col">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Basic Salary</td>
+                    <td class="amount">{{ "{:,.0f}".format(employee.minimum_wages) }}</td>
+                    <td>PF Employee</td>
+                    <td class="amount">{{ "{:,.0f}".format(employee.epf_13) }}</td>
+                </tr>
+                <tr>
+                    <td>HRA</td>
+                    <td class="amount">{{ "{:,.0f}".format(employee.house_rent) }}</td>
+                    <td>ESI Employee</td>
+                    <td class="amount">{{ "{:,.0f}".format(employee.esi_3_25) }}</td>
+                </tr>
+                <tr>
+                    <td>Special Allowance</td>
+                    <td class="amount">{{ "{:,.0f}".format(employee.special_allowance) }}</td>
+                    <td>Labour Welfare Fund</td>
+                    <td class="amount">{{ "{:,.0f}".format(employee.labour_welfare_fund) }}</td>
+                </tr>
+                <tr>
+                    <td>Extra Duty Allowance</td>
+                    <td class="amount">{{ "{:,.0f}".format(employee.extra_duty_allowance) }}</td>
+                    <td>TDS</td>
+                    <td class="amount">{{ "{:,.0f}".format(employee.professional_tax) }}</td>
+                </tr>
+                <tr>
+                    <td>Travelling Allowance</td>
+                    <td class="amount">{{ "{:,.0f}".format(employee.travelling_allowance) }}</td>
+                    <td>Other Deduction</td>
+                    <td class="amount">-</td>
+                </tr>
+                <tr>
+                    <td>Bonus</td>
+                    <td class="amount">{{ "{:,.0f}".format(employee.bonus) }}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td><strong>Total Earnings</strong></td>
+                    <td class="amount"><strong>{{ "{:,.0f}".format(employee.gross_wage) }}</strong></td>
+                    <td><strong>Total Deductions</strong></td>
+                    <td class="amount"><strong>{{ "{:,.0f}".format(employee.total_deductions) }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- ===== NET SALARY ===== -->
+        <div class="net-pay">
+            <table>
+                <tr>
+                    <td class="net-label">Net Salary</td>
+                    <td class="net-amount">{{ "{:,.0f}".format(employee.net_take_home_pay) }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- ===== REMARKS (if any) ===== -->
+        {% if employee.remarks %}
+        <div class="remarks">
+            <strong>Remarks:</strong> {{ employee.remarks }}
+        </div>
+        {% endif %}
+
+        <!-- ===== FOOTER ===== -->
+        <div class="footer">
+            <p class="disclaimer">This is a system-generated payslip.</p>
+            <p class="generated-date">Generated on: {{ generated_date }}</p>
+        </div>
+
+    </div>
+</body>
+</html>
