@@ -1,0 +1,226 @@
+/*
+ * PaySlip Stylesheet — Holistic Allied Services
+ *
+ * Matches the Excel-based payslip format provided by the client:
+ *   - Clean spreadsheet-like layout
+ *   - Earnings left, Deductions right in single table
+ *   - Company branding header
+ *   - A4 page size for PDF output
+ */
+
+/* ===== PAGE SETUP (for PDF/print) ===== */
+@page {
+    size: A4;
+    margin: 15mm;
+}
+
+/* ===== BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Calibri, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #333333;
+    line-height: 1.4;
+    background: white;
+}
+
+/* ===== PAYSLIP CONTAINER ===== */
+.payslip {
+    width: 100%;
+    max-width: 180mm;
+    margin: 0 auto;
+    padding: 5mm 0;
+}
+
+/* ===== COMPANY HEADER ===== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+}
+
+.header-left {
+    flex: 1;
+}
+
+.ref-number {
+    font-size: 10px;
+    color: #333333;
+    border: 1px solid #999999;
+    display: inline-block;
+    padding: 3px 10px;
+    margin-top: 5px;
+}
+
+.header-right {
+    text-align: right;
+}
+
+.company-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1a5c2e;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+}
+
+.company-tagline {
+    font-size: 8px;
+    color: #666666;
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+/* ===== PAYSLIP TITLE BAR ===== */
+.payslip-title {
+    background-color: #d9e2f3;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #1f3864;
+    padding: 6px 0;
+    margin-bottom: 8px;
+    border: 1px solid #8eaadb;
+    letter-spacing: 0.5px;
+}
+
+/* ===== EMPLOYEE INFO TABLE ===== */
+.employee-info {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+}
+
+.employee-info td {
+    padding: 4px 8px;
+    border: 1px solid #bfbfbf;
+    font-size: 10px;
+}
+
+.employee-info .label {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333333;
+    width: 18%;
+}
+
+.employee-info .value {
+    width: 32%;
+    color: #333333;
+}
+
+/* ===== SALARY TABLE (Earnings + Deductions in one table) ===== */
+.salary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+    border: 1px solid #bfbfbf;
+}
+
+.salary-table th {
+    background-color: #d9e2f3;
+    color: #1f3864;
+    padding: 5px 8px;
+    font-size: 10px;
+    text-align: left;
+    border: 1px solid #8eaadb;
+    font-weight: bold;
+}
+
+.salary-table td {
+    padding: 4px 8px;
+    border: 1px solid #bfbfbf;
+    font-size: 10px;
+}
+
+.salary-table tbody tr:nth-child(even) {
+    background-color: #f7f9fc;
+}
+
+.amount-col {
+    text-align: right;
+    width: 15%;
+}
+
+.amount {
+    text-align: right;
+    font-family: Calibri, 'Courier New', monospace;
+}
+
+/* ===== TOTAL ROW ===== */
+.total-row {
+    background-color: #e2efda !important;
+    border-top: 2px solid #548235;
+}
+
+.total-row td {
+    padding: 5px 8px;
+    font-size: 10px;
+    border: 1px solid #548235;
+}
+
+/* ===== NET SALARY ===== */
+.net-pay {
+    margin-bottom: 10px;
+}
+
+.net-pay table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #1f3864;
+    background-color: #1f3864;
+}
+
+.net-label {
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 6px 10px;
+    letter-spacing: 0.5px;
+}
+
+.net-amount {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: right;
+    padding: 6px 10px;
+    font-family: Calibri, 'Courier New', monospace;
+}
+
+/* ===== REMARKS ===== */
+.remarks {
+    background-color: #fff2cc;
+    border: 1px solid #ffd966;
+    padding: 5px 8px;
+    margin-bottom: 10px;
+    font-size: 10px;
+    color: #7f6000;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    margin-top: 15px;
+    padding-top: 5px;
+}
+
+.disclaimer {
+    font-size: 8px;
+    color: #999999;
+    text-align: center;
+    font-style: italic;
+}
+
+.generated-date {
+    font-size: 8px;
+    color: #999999;
+    text-align: right;
+    margin-top: 3px;
+}
