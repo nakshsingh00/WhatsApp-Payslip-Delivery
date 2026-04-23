@@ -63,19 +63,9 @@ body {
     text-align: right;
 }
 
-.company-name {
-    font-size: 16px;
-    font-weight: bold;
-    color: #1a5c2e;
-    line-height: 1.2;
-    letter-spacing: 0.5px;
-}
-
-.company-tagline {
-    font-size: 8px;
-    color: #666666;
-    letter-spacing: 1px;
-    margin-top: 2px;
+.company-logo {
+    height: 70px;
+    width: auto;
 }
 
 /* ===== PAYSLIP TITLE BAR ===== */

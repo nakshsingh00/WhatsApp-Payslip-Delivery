@@ -114,13 +114,12 @@ class TestRenderPayslip(unittest.TestCase):
         self.assertIn("MARCH, 2026", html)
         print("✅ TEST 8 PASSED: Pay period appears in rendered HTML!")
 
-    def test_render_contains_company_name(self):
-        """Rendered HTML should contain the company name."""
+    def test_render_contains_company_logo(self):
+        """Rendered HTML should contain the company logo image."""
         html = render_payslip(SAMPLE_EMPLOYEE, pay_period="MARCH, 2026")
-        self.assertIn("HOLISTIC", html)
-        self.assertIn("ALLIED", html)
-        self.assertIn("SERVICES", html)
-        print("✅ TEST 9 PASSED: Company name appears in rendered HTML!")
+        self.assertIn("logo.jpg", html)
+        self.assertIn("Holistic Allied Services", html)  # alt text
+        print("✅ TEST 9 PASSED: Company logo appears in rendered HTML!")
 
     def test_render_contains_deduction_items(self):
         """Rendered HTML should contain deduction line items."""
