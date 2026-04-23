@@ -40,9 +40,25 @@
 | 27 | GUI File Selection & Data Preview | ⏳ Planned | 2h | P0 |
 | 28 | GUI Progress Tracking & Status | ⏳ Planned | 1h | P0 |
 | 29 | GUI Execution Log & Reports | ⏳ Planned | 1h | P0 |
-| 30 | Final Documentation & User Guide | ⏳ Planned | 3h | P1 |
+| 30 | Deployment Preparation & Packaging | ⏳ Planned | 2h | P0 |
+| 31 | Execution Report Generator | ⏳ Planned | 2h | P1 |
+| 32 | Batch History & Run Log | ⏳ Planned | 1h | P1 |
+| 33 | Employee Delivery Log | ⏳ Planned | 1h | P1 |
+| 34 | Analytics Dashboard | ⏳ Planned | 2h | P2 |
+| 35 | REST API Endpoints | ⏳ Planned | 3h | P2 |
+| 36 | User Guide (Non-Technical) | ⏳ Planned | 2h | P1 |
+| 37 | Technical Architecture Documentation | ⏳ Planned | 1h | P1 |
+| 38 | Troubleshooting Guide & FAQ | ⏳ Planned | 1h | P1 |
+| 39 | Configuration Reference Guide | ⏳ Planned | 1h | P1 |
+| 40 | Performance Optimization | ⏳ Planned | 1h | P2 |
+| 41 | Security Audit & Code Review | ⏳ Planned | 1h | P0 |
+| 42 | Backup & Recovery Procedures | ⏳ Planned | 0.5h | P1 |
+| 43 | Monthly Operation Checklist | ⏳ Planned | 0.5h | P1 |
+| 44 | HR System Integration Notes | ⏳ Planned | 0.5h | P2 |
+| 45 | Future Enhancement Roadmap | ⏳ Planned | 0.5h | P2 |
+| 46 | Final Project Handover & Sign-off | ⏳ Planned | 1h | P0 |
 
-**Total Estimated**: 53 hours | **Completed**: 12h | **Remaining**: 41h
+**Total Estimated**: 65 hours | **Completed**: 12h | **Remaining**: 53h
 
 ---
 
@@ -317,12 +333,160 @@ Displays a scrolling execution log panel in the GUI showing timestamped events (
 
 ---
 
-### Issue #30 — Final Documentation & User Guide
-**Status**: ⏳ Planned | **Estimated**: 3h | **Priority**: P1  
-Writes complete end-user documentation covering setup, Excel file format requirements, step-by-step usage, troubleshooting guide, and FAQ. Includes screenshots of the GUI and sample payslip output.
+### Issue #30 — Deployment Preparation & Packaging
+**Status**: ⏳ Planned | **Estimated**: 2h | **Priority**: P0  
+Creates a one-click `run.py` launcher and platform-specific setup scripts (`setup.bat` for Windows, `setup.sh` for Mac/Linux) that install dependencies and configure the `.env` from the template. Packages everything so the tool can be handed off and run on any machine without developer knowledge.
 
-**Deliverables**: `docs/USAGE.md` (user guide), `docs/TROUBLESHOOTING.md`, `docs/CONFIG.md`, README update  
+**Deliverables**: `run.py`, `setup.bat`, `setup.sh`, final `requirements.txt`, deployment checklist  
 **Dependencies**: Issues #25–29
+
+---
+
+## Advanced Features
+
+### Issue #31 — Execution Report Generator
+**Status**: ⏳ Planned | **Estimated**: 2h | **Priority**: P1  
+Automatically generates a detailed delivery report after each batch run — exported as both CSV and PDF. Report includes: total employees processed, successful deliveries, failed deliveries, retry outcomes, estimated Twilio cost (₹), and per-employee status rows.
+
+**Deliverables**: `generate_report()` function, CSV report in `data/reports/`, optional PDF summary  
+**Dependencies**: Issues #16–18, #25
+
+---
+
+### Issue #32 — Batch History & Run Log
+**Status**: ⏳ Planned | **Estimated**: 1h | **Priority**: P1  
+Maintains a persistent log of all previous payslip batch runs: date, month, employee count, success rate, and total cost. Stored as a simple JSON or CSV file so the payroll administrator can review past activity.
+
+**Deliverables**: `data/reports/batch_history.json`, history viewer utility  
+**Dependencies**: Issues #15–16, #31
+
+---
+
+### Issue #33 — Employee Delivery Log
+**Status**: ⏳ Planned | **Estimated**: 1h | **Priority**: P1  
+Tracks per-employee delivery history across all runs — every payslip sent to each employee with date, month, delivery status, and any errors. Useful for resolving disputes ("did we send your October payslip?").
+
+**Deliverables**: `data/reports/employee_delivery_log.json`, lookup function by employee ID  
+**Dependencies**: Issues #16, #32
+
+---
+
+### Issue #34 — Analytics Dashboard
+**Status**: ⏳ Planned | **Estimated**: 2h | **Priority**: P2  
+Adds an analytics screen to the GUI showing summary statistics across all runs: total payslips sent to date, average delivery success rate, most common failure reasons, monthly cost trend, and employee WhatsApp coverage percentage.
+
+**Deliverables**: Analytics screen in `gui.py`, charts using matplotlib or tkinter Canvas  
+**Dependencies**: Issues #32–33
+
+---
+
+### Issue #35 — REST API Endpoints
+**Status**: ⏳ Planned | **Estimated**: 3h | **Priority**: P2  
+Optional API layer (Flask-based) that exposes the core functionality as HTTP endpoints — useful if Holistic Allied Services wants to trigger payslip generation/delivery from another internal system rather than the GUI. Endpoints: `POST /generate`, `POST /send`, `GET /status`.
+
+**Deliverables**: `src/api.py` (Flask routes), API documentation, startup script  
+**Dependencies**: Issues #9–18
+
+---
+
+## Maintenance & Support
+
+### Issue #36 — User Guide (Non-Technical)
+**Status**: ⏳ Planned | **Estimated**: 2h | **Priority**: P1  
+Step-by-step documentation written for payroll staff with no technical background. Covers: initial setup, how to prepare the Excel file, running the tool each month, understanding the results, and what to do if something goes wrong. Includes annotated GUI screenshots.
+
+**Deliverables**: `docs/USAGE.md` with screenshots, printed quick-reference card  
+**Dependencies**: Issues #26–30
+
+---
+
+### Issue #37 — Technical Architecture Documentation
+**Status**: ⏳ Planned | **Estimated**: 1h | **Priority**: P1  
+Developer-facing documentation describing the module architecture, data flow through the pipeline, public function API reference for each module, and contribution guidelines for future developers who maintain the tool.
+
+**Deliverables**: `docs/ARCHITECTURE.md`, updated `README.md`  
+**Dependencies**: Issues #1–35
+
+---
+
+### Issue #38 — Troubleshooting Guide & FAQ
+**Status**: ⏳ Planned | **Estimated**: 1h | **Priority**: P1  
+Covers the 15 most common errors users are likely to encounter — exact error messages, root cause explanation, and step-by-step resolution. FAQ section addresses recurring questions about Excel format, WhatsApp delivery, and Twilio credentials.
+
+**Deliverables**: `docs/TROUBLESHOOTING.md`, `docs/FAQ.md`  
+**Dependencies**: Issues #36–37
+
+---
+
+### Issue #39 — Configuration Reference Guide
+**Status**: ⏳ Planned | **Estimated**: 1h | **Priority**: P1  
+Complete reference for every setting in `.env` — what it does, accepted values, default value, and consequences of changing it. Prevents misconfiguration errors when the tool is set up on a new machine.
+
+**Deliverables**: `docs/CONFIG.md`, updated `.env.example` with inline comments  
+**Dependencies**: Issue #3
+
+---
+
+### Issue #40 — Performance Optimization
+**Status**: ⏳ Planned | **Estimated**: 1h | **Priority**: P2  
+Profile the tool against a 500-employee batch. Identify any bottlenecks in PDF generation, Excel parsing, or WhatsApp send throughput. Implement targeted optimizations (e.g., PDF generation parallelization, chunked Excel reads) and document the results.
+
+**Deliverables**: Performance benchmark report, any code optimizations applied  
+**Dependencies**: Issues #10, #15, #22
+
+---
+
+### Issue #41 — Security Audit & Code Review
+**Status**: ⏳ Planned | **Estimated**: 1h | **Priority**: P0  
+Final security review before handover: confirm no credentials are hardcoded, `.env` is in `.gitignore`, PDF files do not persist longer than configured retention, Twilio calls use HTTPS, and no employee data is logged in plain text at DEBUG level.
+
+**Deliverables**: Security checklist sign-off, any code fixes required  
+**Dependencies**: All coding issues
+
+---
+
+### Issue #42 — Backup & Recovery Procedures
+**Status**: ⏳ Planned | **Estimated**: 0.5h | **Priority**: P1  
+Documents which files and folders need to be backed up (`.env`, `data/reports/`, `data/archived_payslips/`), how to back them up, and how to restore the tool on a new machine from scratch including re-entering credentials.
+
+**Deliverables**: `docs/BACKUP.md`, backup checklist  
+**Dependencies**: Issues #36–39
+
+---
+
+### Issue #43 — Monthly Operation Checklist
+**Status**: ⏳ Planned | **Estimated**: 0.5h | **Priority**: P1  
+Standard Operating Procedure (SOP) document for payroll staff: the exact steps to follow every month from receiving the Excel payroll file through to confirming all payslips delivered. One-page checklist format suitable for printing and keeping at the workstation.
+
+**Deliverables**: `docs/MONTHLY_SOP.md`, printable one-page checklist  
+**Dependencies**: Issue #36
+
+---
+
+### Issue #44 — HR System Integration Notes
+**Status**: ⏳ Planned | **Estimated**: 0.5h | **Priority**: P2  
+Documents how the tool could be connected to an external HR system or payroll software in the future — what data format it expects, which functions act as integration points, and what changes would be needed. No code changes required now; this is planning documentation only.
+
+**Deliverables**: `docs/INTEGRATION_NOTES.md`  
+**Dependencies**: Issues #37, #35
+
+---
+
+### Issue #45 — Future Enhancement Roadmap
+**Status**: ⏳ Planned | **Estimated**: 0.5h | **Priority**: P2  
+Documented list of potential future improvements prioritized by business value: email delivery fallback, automated monthly scheduling, multi-company support, payslip password protection, employee self-service portal. Each item includes effort estimate and prerequisites.
+
+**Deliverables**: `docs/ROADMAP.md`  
+**Dependencies**: Issues #36–44
+
+---
+
+### Issue #46 — Final Project Handover & Sign-off
+**Status**: ⏳ Planned | **Estimated**: 1h | **Priority**: P0  
+Formal handover session with Holistic Allied Services: walkthrough of the complete tool, verification it works on the client's machine, handover of all credentials and documentation, and written acceptance sign-off. Marks the project as production-ready and delivered.
+
+**Deliverables**: Completed handover checklist, acceptance sign-off document, all credentials transferred  
+**Dependencies**: Issues #40–45
 
 ---
 

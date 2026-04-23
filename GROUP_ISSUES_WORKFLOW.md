@@ -105,35 +105,77 @@ Validates the entire system works correctly under all conditions before deployme
 ---
 
 ## Group 7: GUI & Deployment
-**Status**: ⏳ Planned | **Issues**: #25–30 | **Total Time**: 11h
+**Status**: ⏳ Planned | **Issues**: #25–30 | **Total Time**: 9h
 
 Wraps everything in a desktop GUI so non-technical staff can operate the tool, then packages it for handoff.
 
 | # | Issue | Status | Time |
 |---|-------|--------|------|
-| 25 | Deployment Preparation & Packaging | ⏳ Planned | 2h |
+| 25 | User Acceptance Testing | ⏳ Planned | 1h |
 | 26 | GUI Main Window (Tkinter) | ⏳ Planned | 2h |
 | 27 | GUI File Selection & Data Preview | ⏳ Planned | 2h |
 | 28 | GUI Progress Tracking & Status | ⏳ Planned | 1h |
 | 29 | GUI Execution Log & Reports | ⏳ Planned | 1h |
-| 30 | Final Documentation & User Guide | ⏳ Planned | 3h |
+| 30 | Deployment Preparation & Packaging | ⏳ Planned | 2h |
 
-**Group Output**: `gui.py`, `run.py` launcher, setup scripts, complete user documentation.
+**Group Output**: `gui.py`, `run.py` launcher, setup scripts, deployable application package.
+
+---
+
+## Group 8: Advanced Features
+**Status**: ⏳ Planned | **Issues**: #31–35 | **Total Time**: 9h
+
+Adds reporting, history tracking, and optional API capabilities on top of the core tool. These are lower priority — the core tool is fully functional without them.
+
+| # | Issue | Status | Time |
+|---|-------|--------|------|
+| 31 | Execution Report Generator | ⏳ Planned | 2h |
+| 32 | Batch History & Run Log | ⏳ Planned | 1h |
+| 33 | Employee Delivery Log | ⏳ Planned | 1h |
+| 34 | Analytics Dashboard | ⏳ Planned | 2h |
+| 35 | REST API Endpoints | ⏳ Planned | 3h |
+
+**Group Output**: CSV/PDF delivery reports, batch run history, employee delivery log, analytics screen, optional API layer.
+
+---
+
+## Group 9: Maintenance & Support
+**Status**: ⏳ Planned | **Issues**: #36–46 | **Total Time**: 8.5h
+
+Covers all documentation, security review, and formal handover. The last group — completes when the tool is signed off by Holistic Allied Services.
+
+| # | Issue | Status | Time |
+|---|-------|--------|------|
+| 36 | User Guide (Non-Technical) | ⏳ Planned | 2h |
+| 37 | Technical Architecture Documentation | ⏳ Planned | 1h |
+| 38 | Troubleshooting Guide & FAQ | ⏳ Planned | 1h |
+| 39 | Configuration Reference Guide | ⏳ Planned | 1h |
+| 40 | Performance Optimization | ⏳ Planned | 1h |
+| 41 | Security Audit & Code Review | ⏳ Planned | 1h |
+| 42 | Backup & Recovery Procedures | ⏳ Planned | 0.5h |
+| 43 | Monthly Operation Checklist | ⏳ Planned | 0.5h |
+| 44 | HR System Integration Notes | ⏳ Planned | 0.5h |
+| 45 | Future Enhancement Roadmap | ⏳ Planned | 0.5h |
+| 46 | Final Project Handover & Sign-off | ⏳ Planned | 1h |
+
+**Group Output**: Complete documentation suite, security sign-off, accepted and delivered tool.
 
 ---
 
 ## Overall Progress
 
 ```
-Group 1: Foundation      [██████████] ✅ 100% (5/5h)
-Group 2: Excel Data      [██████████] ✅ 100% (7/7h)
-Group 3: Data Pipeline   [░░░░░░░░░░] 🔄   0% (0/6h)  ← CURRENT
-Group 4: PDF Generation  [░░░░░░░░░░] ⏳   0% (0/6h)
-Group 5: WhatsApp        [░░░░░░░░░░] ⏳   0% (0/8h)
-Group 6: Testing & QA    [░░░░░░░░░░] ⏳   0% (0/6h)
-Group 7: GUI & Deploy    [░░░░░░░░░░] ⏳   0% (0/11h)
+Group 1: Foundation         [██████████] ✅ 100% (5/5h)
+Group 2: Excel Data         [██████████] ✅ 100% (7/7h)
+Group 3: Data Pipeline      [░░░░░░░░░░] 🔄   0% (0/6h)  ← CURRENT
+Group 4: PDF Generation     [░░░░░░░░░░] ⏳   0% (0/6h)
+Group 5: WhatsApp Delivery  [░░░░░░░░░░] ⏳   0% (0/8h)
+Group 6: Testing & QA       [░░░░░░░░░░] ⏳   0% (0/6h)
+Group 7: GUI & Deployment   [░░░░░░░░░░] ⏳   0% (0/9h)
+Group 8: Advanced Features  [░░░░░░░░░░] ⏳   0% (0/9h)
+Group 9: Maintenance        [░░░░░░░░░░] ⏳   0% (0/8.5h)
 
-TOTAL: 12/53 hours (23%) complete
+TOTAL: 12/65 hours (18%) complete  |  46 issues total  |  6 done, 40 remaining
 ```
 
 ---
@@ -142,6 +184,7 @@ TOTAL: 12/53 hours (23%) complete
 
 1. **Never start a group before the prior group is fully done.** Each group's code depends on the previous group's output.
 2. **Within a group, issues should be done in number order.** They are sequenced deliberately.
-3. **Exception**: Issue #22 (Load Testing) and Issue #24 (UAT) can run in parallel with #21 and #23 if needed.
-4. **WhatsApp numbers**: The user will add WhatsApp contact numbers to the Excel file before Group 5 begins. No action required before then.
-5. **Twilio credentials**: Will be needed before Group 5 begins. Instructions are in `.env.example`.
+3. **Exception**: Group 8 (Advanced Features) and Group 9 (Maintenance) can be worked on in parallel once Group 7 is complete.
+4. **Group 8 is optional for initial delivery** — the tool is fully functional after Group 7. Group 8 adds reporting and analytics on top.
+5. **WhatsApp numbers**: The user will add WhatsApp contact numbers to the Excel file before Group 5 begins. No action required before then.
+6. **Twilio credentials**: Will be needed before Group 5 begins. Instructions are in `.env.example`.
