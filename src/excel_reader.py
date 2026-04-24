@@ -16,34 +16,43 @@ def get_column_mapping() -> Dict[str, List[str]]:
         Dictionary mapping field names to list of possible column names
     """
     return {
-        "emp_id": ["Employee ID", "Emp ID", "EMP_ID", "Employee Code"],
-        "name": ["Employee Name", "Name", "Emp Name"],
+        "emp_id": ["Emp ID", "Employee ID", "EMP_ID", "Employee Code"],
+        "name": ["Name", "Employee Name", "Emp Name"],
         "designation": ["Designation", "Designation/Grade", "Job Title"],
-        "department": ["Department", "Dept", "Deptt"],
+        "department": ["Department", "Dept", "Deptt", "Deparment"],
         "location": ["Location", "City", "Office Location"],
         "gender": ["Gender", "Sex"],
         "status": ["Status", "Employee Status", "Emp Status"],
-        "date_of_joining": ["DOJ", "Date of Joining", "Joining Date"],
-        "date_of_leaving": ["DOL", "Date of Leaving", "Left Date"],
-        "whatsapp_contact": ["WhatsApp", "WhatsApp Contact", "Mobile", "Phone"],
+        "date_of_joining": ["Date of Joining", "DOJ", "Joining Date"],
+        "date_of_leaving": ["Date of Leaving", "DOL", "Left Date"],
+        "whatsapp_contact": ["Whatsapp Nmbr", "WhatsApp", "WhatsApp Contact",
+                             "Mobile", "Phone", "Whatsapp Number", "WhatsApp No"],
         "minimum_wages": ["Minimum Wages", "Min Wages", "MW"],
-        "house_rent": ["House Rent", "HRA", "House Rent Allowance"],
+        "house_rent": ["House Rent Allowance", "House Rent", "HRA"],
         "special_allowance": ["Special Allowance", "SA", "Spec Allowance"],
         "extra_duty_allowance": ["Extra Duty Allowance", "EDA", "Extra Duty"],
-        "travelling_allowance": ["Travelling Allowance", "TA", "Travel Allowance"],
-        "bonus": ["Bonus", "Performance Bonus"],
-        "leave_with_wages": ["Leave with Wages", "LWW", "Leave Wages"],
+        "travelling_allowance": ["Travelling Allowance", "Travelling Allownace",
+                                 "TA", "Travel Allowance"],
+        "bonus": ["Bonus @ 8.33% on Min. Wage", "Bonus", "Performance Bonus"],
+        "leave_with_wages": ["Leave (with Wages) - 18 Days / Year",
+                             "Leave with Wages", "LWW", "Leave Wages"],
         "labour_welfare_fund": ["Labour Welfare Fund", "LWF", "Welfare Fund"],
-        "cost_of_uniform": ["Cost of Uniform", "Uniform", "Uniform Cost"],
+        "cost_of_uniform": ["Cost of uniform", "Cost of Uniform", "Uniform",
+                            "Uniform Cost"],
         "gross_wage": ["Gross Wage", "Gross", "Gross Amount"],
         "ctc": ["CTC", "Cost to Company"],
-        "epf_13": ["EPF 13%", "EPF_13", "EPF Employee"],
-        "esi_3_25": ["ESI 3.25%", "ESI_3.25", "ESI Employee"],
-        "epf_12": ["EPF 12%", "EPF_12", "EPF Employer"],
-        "esi_0_75": ["ESI 0.75%", "ESI_0.75", "ESI Employer"],
+        "epf_13": ["E.P.F @ 13% on Minimum Wages", "EPF 13%", "EPF_13",
+                   "EPF Employee", "PF Employee"],
+        "esi_3_25": ["E.S.I @ 3.25% on Gross Wage", "ESI 3.25%", "ESI_3.25",
+                     "ESI Employee"],
+        "epf_12": ["E.P.F @ 12% on Minimum Wages", "EPF 12%", "EPF_12",
+                   "EPF Employer"],
+        "esi_0_75": ["E.S.I @ 0.75% on Gross Wage", "ESI 0.75%", "ESI_0.75",
+                     "ESI Employer"],
         "professional_tax": ["Professional Tax", "PT", "Prof Tax"],
         "total_deductions": ["Total Deductions", "Total Ded", "Deductions"],
-        "net_take_home_pay": ["Net Take Home Pay", "Net Pay", "Net Amount"],
+        "net_take_home_pay": ["Net Take Home Pay", "Net Pay", "Net Amount",
+                              "Net Take Home Pay "],
         "remarks": ["Remarks", "Notes", "Comments"]
     }
 
@@ -59,17 +68,37 @@ def find_column(df_columns: List[str], possible_names: List[str]) -> Tuple[bool,
     Returns:
         Tuple of (found: bool, column_name: str)
     """
+    import re as _re
+
     # First try exact match (case-sensitive)
     for col in df_columns:
         if col in possible_names:
             return True, col
-    
+
     # Then try case-insensitive match
     df_cols_lower = {col.lower(): col for col in df_columns}
     for name in possible_names:
         if name.lower() in df_cols_lower:
             return True, df_cols_lower[name.lower()]
-    
+
+    # Then try normalized whitespace match (handles Excel wrapped headers)
+    # "E.P.F @ 13%\non Minimum\nWages" matches "E.P.F @ 13% on Minimum Wages"
+    def normalize(s):
+        return _re.sub(r'\s+', ' ', str(s).strip().lower())
+
+    df_cols_norm = {normalize(col): col for col in df_columns}
+    for name in possible_names:
+        if normalize(name) in df_cols_norm:
+            return True, df_cols_norm[normalize(name)]
+
+    # Finally try substring/contains match for long column names
+    for name in possible_names:
+        name_norm = normalize(name)
+        if len(name_norm) >= 8:  # Only for reasonably long names
+            for col_norm, col_orig in df_cols_norm.items():
+                if name_norm in col_norm or col_norm in name_norm:
+                    return True, col_orig
+
     return False, ""
 
 
@@ -120,10 +149,30 @@ def read_excel(file_path: str) -> Tuple[bool, List[Dict], str]:
         file = Path(file_path)
         if not file.exists():
             return False, [], f"File not found: {file_path}"
-        
-        # Read Excel file
+
+        # Try reading with default header (row 0)
         df = pd.read_excel(file_path)
-        logger.info(f"Excel file read successfully: {len(df)} rows")
+
+        # Auto-detect header row: if columns are mostly "Unnamed", the real
+        # headers are on a later row. Scan the first 10 rows for known names.
+        unnamed_count = sum(1 for c in df.columns if str(c).startswith("Unnamed"))
+        if unnamed_count > len(df.columns) / 2:
+            logger.info("Detected non-standard header row, scanning for real headers...")
+            known_names = {"name", "emp id", "designation", "status", "gross wage",
+                           "minimum wages", "net take home pay", "location"}
+            raw = pd.read_excel(file_path, header=None, nrows=10)
+            for row_idx in range(10):
+                row_vals = [str(v).strip().lower() for v in raw.iloc[row_idx] if str(v) != "nan"]
+                matches = sum(1 for v in row_vals if v in known_names)
+                if matches >= 3:
+                    logger.info(f"Found header row at index {row_idx}")
+                    df = pd.read_excel(file_path, header=row_idx)
+                    break
+
+        # Strip whitespace from column names (handles "Net Take Home Pay " etc.)
+        df.columns = [str(c).strip() for c in df.columns]
+
+        logger.info(f"Excel file read successfully: {len(df)} rows, {len(df.columns)} columns")
         
         # Validate columns
         valid, message = validate_columns(df)
