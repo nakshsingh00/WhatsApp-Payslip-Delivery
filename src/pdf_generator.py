@@ -72,8 +72,11 @@ def generate_pdf(
         return False, f"WeasyPrint system libraries missing: {e}"
 
     try:
-        # Step 1: Set up output directory
+        # Step 1: Set up output directory, sorted by location
         out_dir = Path(output_dir) if output_dir else OUTPUT_DIR
+        location = str(employee.get("location", "")).strip()
+        if location:
+            out_dir = out_dir / location
         out_dir.mkdir(parents=True, exist_ok=True)
 
         # Step 2: Generate filename if not provided

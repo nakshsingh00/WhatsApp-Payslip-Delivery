@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-PaySlip Generator — Launcher Script
+PaySlip Generator & WhatsApp Sender
+Holistic Allied Services
 
 Double-click this file or run: python3 run.py
 """
@@ -14,6 +15,9 @@ if sys.platform == "darwin":
 
 # Make sure we can import from src/
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Change to project directory so relative paths work
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from src.gui import run_app
 
