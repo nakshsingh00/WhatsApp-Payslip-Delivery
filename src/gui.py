@@ -285,27 +285,43 @@ class PaySlipApp:
     # ================================================================
 
     def _build_whatsapp_tab(self):
-        """Build the WhatsApp tab (placeholder until Issues #13-18 are done)."""
-        frame = ttk.Frame(self.tab_whatsapp, padding=40)
-        frame.pack(expand=True)
+        """Build the WhatsApp delivery tab."""
 
-        ttk.Label(
-            frame,
-            text="WhatsApp Delivery",
-            font=("Helvetica", 14, "bold")
-        ).pack(pady=(0, 10))
+        # --- Connection status ---
+        conn_frame = ttk.LabelFrame(self.tab_whatsapp, text="Twilio Connection", padding=10)
+        conn_frame.pack(fill=tk.X, pady=(0, 10))
 
-        ttk.Label(
-            frame,
-            text="This feature will be available after the WhatsApp integration\n"
-                 "module is complete (Issues #13-18).\n\n"
-                 "Requirements:\n"
-                 "  - Twilio account with WhatsApp Business API\n"
-                 "  - WhatsApp numbers added to the Excel file\n"
-                 "  - Credentials set in .env file",
-            justify=tk.CENTER,
-            foreground="gray"
-        ).pack()
+        self.wa_conn_var = tk.StringVar(value="Not checked")
+        ttk.Label(conn_frame, textvariable=self.wa_conn_var).pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(conn_frame, text="Test Connection", command=self._test_whatsapp_connection).pack(side=tk.RIGHT)
+
+        # --- Send controls ---
+        send_frame = ttk.LabelFrame(self.tab_whatsapp, text="Send Payslips", padding=10)
+        send_frame.pack(fill=tk.X, pady=(0, 10))
+
+        self.wa_status = tk.StringVar(value="Generate PDFs first, then send via WhatsApp")
+        ttk.Label(send_frame, textvariable=self.wa_status, font=("Helvetica", 11)).pack(anchor=tk.W, pady=(0, 10))
+
+        # Progress bar
+        self.wa_progress_var = tk.DoubleVar(value=0)
+        self.wa_progress_bar = ttk.Progressbar(send_frame, variable=self.wa_progress_var, maximum=100)
+        self.wa_progress_bar.pack(fill=tk.X, pady=(0, 5))
+
+        self.wa_progress_label = tk.StringVar(value="")
+        ttk.Label(send_frame, textvariable=self.wa_progress_label).pack(anchor=tk.W)
+
+        btn_frame = ttk.Frame(send_frame)
+        btn_frame.pack(fill=tk.X, pady=(10, 0))
+
+        self.wa_send_button = ttk.Button(btn_frame, text="Send All via WhatsApp", command=self._send_whatsapp)
+        self.wa_send_button.pack(side=tk.LEFT, padx=5)
+
+        # --- Delivery results ---
+        wa_results_frame = ttk.LabelFrame(self.tab_whatsapp, text="Delivery Results", padding=10)
+        wa_results_frame.pack(fill=tk.BOTH, expand=True)
+
+        self.wa_results_text = scrolledtext.ScrolledText(wa_results_frame, height=10, font=("Courier", 10), state=tk.DISABLED)
+        self.wa_results_text.pack(fill=tk.BOTH, expand=True)
 
     # ================================================================
     # TAB 4: EXECUTION LOG
@@ -693,6 +709,147 @@ class PaySlipApp:
             os.startfile(path)
         else:
             subprocess.run(["xdg-open", path])
+
+    def _test_whatsapp_connection(self):
+        """Test the Twilio WhatsApp connection."""
+        self._log("Testing Twilio connection...")
+        try:
+            from src.whatsapp_sender import verify_connection
+            connected, msg = verify_connection()
+            self.wa_conn_var.set(msg)
+            if connected:
+                self._log(f"Twilio: {msg}")
+            else:
+                self._log(f"Twilio ERROR: {msg}")
+                messagebox.showerror("Connection Failed", msg)
+        except Exception as e:
+            self.wa_conn_var.set(f"Error: {e}")
+            self._log(f"Twilio ERROR: {e}")
+
+    def _send_whatsapp(self):
+        """Send payslip notifications via WhatsApp in a background thread."""
+        if not self.generated_files:
+            messagebox.showwarning(
+                "Not Ready",
+                "Please generate PDFs first (Tab 2) before sending via WhatsApp."
+            )
+            return
+
+        if not self.cleaned_employees:
+            messagebox.showwarning("Not Ready", "No employee data loaded.")
+            return
+
+        # Count employees with phone numbers
+        with_phone = sum(1 for e in self.cleaned_employees
+                         if e.get("whatsapp_contact") and
+                         str(e.get("whatsapp_contact")).strip() not in ("", "0", "nan"))
+
+        confirm = messagebox.askyesno(
+            "Confirm WhatsApp Send",
+            f"Send WhatsApp messages to {with_phone} employees?\n\n"
+            f"Total employees: {len(self.cleaned_employees)}\n"
+            f"With WhatsApp number: {with_phone}\n"
+            f"Without number (will be skipped): {len(self.cleaned_employees) - with_phone}\n\n"
+            f"This will use your Twilio account credits."
+        )
+
+        if not confirm:
+            return
+
+        self.wa_send_button.config(state=tk.DISABLED)
+        self.wa_progress_var.set(0)
+        self._log("Starting WhatsApp delivery...")
+
+        thread = threading.Thread(target=self._whatsapp_worker, daemon=True)
+        thread.start()
+
+    def _whatsapp_worker(self):
+        """Background worker for WhatsApp delivery."""
+        try:
+            from src.whatsapp_sender import send_batch, save_delivery_report
+
+            output_dir = self.output_dir_var.get()
+
+            def on_progress(current, total, name, status):
+                pct = (current / total) * 100
+                self.root.after(0, lambda: self.wa_progress_var.set(pct))
+                self.root.after(0, lambda: self.wa_progress_label.set(
+                    f"Sending {current}/{total}: {name} — {status}"
+                ))
+                self.root.after(0, lambda: self._set_status(
+                    f"WhatsApp {current}/{total}: {name}"
+                ))
+
+            results = send_batch(
+                employees=self.cleaned_employees,
+                pdf_dir=output_dir,
+                pay_period=self.pay_period,
+                pay_month=self.pay_month,
+                delay_seconds=2.0,
+                on_progress=on_progress
+            )
+
+            # Save report
+            report_path = save_delivery_report(results)
+
+            def finish():
+                self.wa_send_button.config(state=tk.NORMAL)
+                self.wa_progress_var.set(100)
+                self.wa_progress_label.set(
+                    f"Done: {results['sent']} sent, {results['failed']} failed, "
+                    f"{results['skipped']} skipped"
+                )
+
+                # Write results
+                self.wa_results_text.config(state=tk.NORMAL)
+                self.wa_results_text.delete("1.0", tk.END)
+                lines = [
+                    f"{'=' * 50}",
+                    f"  WHATSAPP DELIVERY REPORT",
+                    f"  {results.get('timestamp', '')}",
+                    f"{'=' * 50}",
+                    f"",
+                    f"  Total:    {results['total']}",
+                    f"  Sent:     {results['sent']}",
+                    f"  Failed:   {results['failed']}",
+                    f"  Skipped:  {results['skipped']}",
+                    f"",
+                    f"  Report saved: {report_path}",
+                    f"{'=' * 50}",
+                ]
+                if results["errors"]:
+                    lines.append("")
+                    lines.append("  ERRORS:")
+                    for err in results["errors"][:20]:
+                        lines.append(f"    - {err['name']}: {err['error']}")
+                    if len(results["errors"]) > 20:
+                        lines.append(f"    ... and {len(results['errors']) - 20} more")
+
+                self.wa_results_text.insert("1.0", "\n".join(lines))
+                self.wa_results_text.config(state=tk.DISABLED)
+
+                self._log(
+                    f"WhatsApp delivery complete: {results['sent']} sent, "
+                    f"{results['failed']} failed, {results['skipped']} skipped"
+                )
+                self._set_status(f"WhatsApp: {results['sent']} sent")
+
+                messagebox.showinfo(
+                    "WhatsApp Delivery Complete",
+                    f"Sent: {results['sent']}\n"
+                    f"Failed: {results['failed']}\n"
+                    f"Skipped: {results['skipped']}\n\n"
+                    f"Report saved to:\n{report_path}"
+                )
+
+            self.root.after(0, finish)
+
+        except Exception as e:
+            def show_error():
+                self.wa_send_button.config(state=tk.NORMAL)
+                messagebox.showerror("Error", f"WhatsApp delivery failed:\n{str(e)}")
+                self._log(f"WhatsApp ERROR: {e}")
+            self.root.after(0, show_error)
 
     def _show_about(self):
         """Show the About dialog."""
