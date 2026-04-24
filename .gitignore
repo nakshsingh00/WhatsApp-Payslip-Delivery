@@ -1,0 +1,28 @@
+# Credentials — NEVER commit these
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated output (too large for git)
+data/generated_payslips/
+data/archived_payslips/
+data/logs/
+data/reports/
+
+# Keep sample data and directory structure
+!data/sample/
+
+# IDE
+.vscode/
+.idea/
