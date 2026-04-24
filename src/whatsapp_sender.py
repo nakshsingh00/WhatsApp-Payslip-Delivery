@@ -229,14 +229,23 @@ def send_batch(
                 on_progress(idx, total, emp_name, "skipped")
             continue
 
-        # Find the PDF file for this employee
+        # Find the PDF file for this employee (may be in location subfolder)
         emp_name_clean = str(emp_name).replace(" ", "_")
+        location = str(emp.get("location", "")).strip()
         month_tag = pay_month.replace("-", "_") if pay_month else "payslip"
         pdf_filename = f"{emp_id}_{emp_name_clean}_{month_tag}.pdf"
-        pdf_path = os.path.join(pdf_dir, pdf_filename)
+
+        # Try: pdf_dir/Location/filename first, then pdf_dir/filename
+        if location:
+            pdf_path = os.path.join(pdf_dir, location, pdf_filename)
+        else:
+            pdf_path = os.path.join(pdf_dir, pdf_filename)
 
         if not os.path.exists(pdf_path):
-            # Try without month tag
+            # Fallback: try without location subfolder
+            pdf_path = os.path.join(pdf_dir, pdf_filename)
+        if not os.path.exists(pdf_path):
+            # Fallback: try without month tag
             pdf_filename = f"{emp_id}_{emp_name_clean}_payslip.pdf"
             pdf_path = os.path.join(pdf_dir, pdf_filename)
 
