@@ -49,19 +49,22 @@ class TestGuiInit(unittest.TestCase):
         self.assertIn("Ready", status)
         print("✅ TEST 4 PASSED: Status bar shows ready!")
 
-    def test_default_pay_period(self):
-        """Default pay period should be current month and year."""
-        period = self.app._default_pay_period()
+    def test_get_pay_period(self):
+        """Pay period should generate both formats from dropdowns."""
+        period, month = self.app._get_pay_period()
         self.assertIn("2026", period)
-        self.assertTrue(period.isupper() or "," in period)
-        print("✅ TEST 5 PASSED: Default pay period generated!")
-
-    def test_default_pay_month(self):
-        """Default pay month should be short format."""
-        month = self.app._default_pay_month()
+        self.assertTrue(period.isupper())
         self.assertIn("-", month)
         self.assertIn("26", month)
-        print("✅ TEST 6 PASSED: Default pay month generated!")
+        print("✅ TEST 5 PASSED: Pay period generates both formats!")
+
+    def test_period_preview_updates(self):
+        """Preview text should show both formats."""
+        self.app._update_period_preview()
+        preview = self.app.period_preview_var.get()
+        self.assertIn("Title:", preview)
+        self.assertIn("Info:", preview)
+        print("✅ TEST 6 PASSED: Period preview updates!")
 
     def test_clear_data(self):
         """Clear should reset all state."""

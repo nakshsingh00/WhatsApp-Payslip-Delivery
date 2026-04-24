@@ -171,15 +171,32 @@ class PaySlipApp:
         period_frame = ttk.LabelFrame(self.tab_load, text="Pay Period", padding=10)
         period_frame.pack(fill=tk.X, pady=(0, 10))
 
-        ttk.Label(period_frame, text="Period (e.g. MARCH, 2026):").pack(side=tk.LEFT)
-        self.period_entry = ttk.Entry(period_frame, width=25)
-        self.period_entry.pack(side=tk.LEFT, padx=10)
-        self.period_entry.insert(0, self._default_pay_period())
+        months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ]
+        now = datetime.now()
 
-        ttk.Label(period_frame, text="Month (e.g. Mar-26):").pack(side=tk.LEFT, padx=(20, 0))
-        self.month_entry = ttk.Entry(period_frame, width=15)
-        self.month_entry.pack(side=tk.LEFT, padx=10)
-        self.month_entry.insert(0, self._default_pay_month())
+        ttk.Label(period_frame, text="Month:").pack(side=tk.LEFT)
+        self.month_combo = ttk.Combobox(period_frame, values=months, width=12, state="readonly")
+        self.month_combo.pack(side=tk.LEFT, padx=(5, 15))
+        self.month_combo.set(now.strftime("%B"))
+
+        ttk.Label(period_frame, text="Year:").pack(side=tk.LEFT)
+        years = [str(y) for y in range(now.year - 1, now.year + 3)]
+        self.year_combo = ttk.Combobox(period_frame, values=years, width=6, state="readonly")
+        self.year_combo.pack(side=tk.LEFT, padx=(5, 15))
+        self.year_combo.set(str(now.year))
+
+        # Preview of what will appear on the payslip
+        self.period_preview_var = tk.StringVar()
+        self._update_period_preview()
+        ttk.Label(period_frame, textvariable=self.period_preview_var,
+                  foreground="gray").pack(side=tk.LEFT, padx=(10, 0))
+
+        # Auto-update preview when month/year changes
+        self.month_combo.bind("<<ComboboxSelected>>", lambda e: self._update_period_preview())
+        self.year_combo.bind("<<ComboboxSelected>>", lambda e: self._update_period_preview())
 
         # --- Info & validation summary ---
         info_frame = ttk.LabelFrame(self.tab_load, text="File Summary", padding=10)
@@ -468,11 +485,10 @@ class PaySlipApp:
             return
 
         # Get pay period from entries
-        self.pay_period = self.period_entry.get().strip()
-        self.pay_month = self.month_entry.get().strip()
+        self.pay_period, self.pay_month = self._get_pay_period()
 
         if not self.pay_period:
-            messagebox.showwarning("Missing", "Please enter the Pay Period (e.g. MARCH, 2026)")
+            messagebox.showwarning("Missing", "Please select a Month and Year")
             return
 
         total = len(self.cleaned_employees)
@@ -706,15 +722,32 @@ class PaySlipApp:
             "and delivers them via WhatsApp."
         )
 
-    def _default_pay_period(self) -> str:
-        """Generate default pay period from current date."""
-        now = datetime.now()
-        return f"{now.strftime('%B').upper()}, {now.year}"
+    def _get_pay_period(self):
+        """Get both pay period formats from the month/year dropdowns.
 
-    def _default_pay_month(self) -> str:
-        """Generate default short month from current date."""
-        now = datetime.now()
-        return f"{now.strftime('%b')}-{now.strftime('%y')}"
+        Returns:
+            Tuple of (period, month) e.g. ("MARCH, 2026", "Mar-26")
+        """
+        month_name = self.month_combo.get()
+        year = self.year_combo.get()
+
+        if not month_name or not year:
+            return "", ""
+
+        # "MARCH, 2026" — for the payslip title bar
+        period = f"{month_name.upper()}, {year}"
+
+        # "Mar-26" — for the employee info table
+        short_month = month_name[:3]
+        short_year = year[-2:]
+        month_short = f"{short_month}-{short_year}"
+
+        return period, month_short
+
+    def _update_period_preview(self):
+        """Update the preview text next to the dropdowns."""
+        period, month = self._get_pay_period()
+        self.period_preview_var.set(f"→  Title: {period}  |  Info: {month}")
 
 
 def run_app():
