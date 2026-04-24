@@ -163,6 +163,12 @@ def standardize_date(date_value: Optional[Union[str, datetime]]) -> str:
         "%d/%m/%y",   # 22/04/26 (2-digit year)
         "%d-%m-%y",   # 22-04-26
         "%Y/%m/%d",   # 2026/04/22
+        "%d-%b-%y",   # 1-Sep-25 (Excel short month name, 2-digit year)
+        "%d-%b-%Y",   # 1-Sep-2025 (Excel short month name, 4-digit year)
+        "%d %b %Y",   # 1 Sep 2025
+        "%d %b %y",   # 1 Sep 25
+        "%m/%d/%Y",   # 10/13/77 (US format seen in BLR data)
+        "%m/%d/%y",   # 10/13/77
     ]
 
     for fmt in formats_to_try:
